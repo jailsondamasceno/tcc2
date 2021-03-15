@@ -13,6 +13,21 @@ which provides a web portal where information can be followed in real time.
 
 Functions can be manipulated in the file: `index.js` in the functions folder.
 
+### Request body that must be sent by the monitoring station
+
+```js
+{
+	"token":"token de identificação",
+	"station":{
+          "id": "01",
+          "name": "Estação João Dias 01",
+          "address": "Avenida João Dias 2025"
+        },
+	"level":3
+	
+}
+```
+
 #### Web Portal
 
 Add firebase credentials
