@@ -32,7 +32,7 @@ Functions can be manipulated in the file: `index.js` in the functions folder.
 
 #### Web Portal
 
-When sending a new request to the server, the web portal is updated in real time
+When sending a new POST request to the server, the web portal is updated in real time
 
 Add firebase credentials
 
