@@ -15,7 +15,10 @@ which provides a web portal where information can be followed in real time.
 
 Functions can be manipulated in the file: `index.js` in the functions folder.
 
+
 ### Request body that must be sent by the monitoring station
+
+When sending a new POST request to the server, the web portal is updated in real time
 
 ```js
 {
@@ -31,8 +34,6 @@ Functions can be manipulated in the file: `index.js` in the functions folder.
 ```
 
 #### Web Portal
-
-When sending a new POST request to the server, the web portal is updated in real time
 
 Add firebase credentials
 
