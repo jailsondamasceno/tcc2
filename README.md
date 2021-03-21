@@ -6,6 +6,8 @@
 
 It is a system with sensors installed in certain regions, capturing information and communicating with a remote server.
 which provides a web portal where information can be followed in real time.
+![image](https://user-images.githubusercontent.com/65731201/111153207-6c048900-8570-11eb-9d18-f194471b795e.png)
+
 
 ## Server and web portal operation
 
@@ -13,7 +15,10 @@ which provides a web portal where information can be followed in real time.
 
 Functions can be manipulated in the file: `index.js` in the functions folder.
 
+
 ### Request body that must be sent by the monitoring station
+
+When sending a new POST request to the server, the web portal is updated in real time
 
 ```js
 {
