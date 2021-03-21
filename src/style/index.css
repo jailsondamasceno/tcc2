@@ -70,7 +70,7 @@
     align-items: center;
     min-height: 100px;
     background-color: rgba(175, 175, 175, 0.1);
-    margin: 5px 0
+    margin: 5px 0;
 }
 
 .low {
@@ -81,7 +81,7 @@
     min-height: 100px;
     background-color: white;
     border: 1px solid rgb(9, 157, 243);
-    margin: 5px 0
+    margin: 5px 0;
 }
 
 .hight {
@@ -103,7 +103,7 @@
     min-height: 100px;
     background-color: white;
     border: 1px solid red;
-    margin: 5px 0
+    margin: 5px 0;
 }
 
 .level-inactive p,
@@ -111,7 +111,7 @@
 .hight p,
 .danger p {
     color: black;
-    margin: 10px
+    margin: 10px;
 }
 
 .material-icons {
@@ -119,8 +119,35 @@
     margin: 10px;
 }
 
+#getHistoryButton {
+    height: 25px;
+    width: 100px;
+    color: white;
+    background-color: aqua;
+    cursor: pointer;
+    border: none;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.graphContainer {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.graph {
+    width: 600px;
+    height: 400px;
+}
+
 @media (max-width: 1024px) {
     .result {
+        width: 100%;
+    }
+    .graph {
         width: 100%;
     }
 }

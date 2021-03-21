@@ -12,13 +12,24 @@ exports.saveLevelStation = functions.https.onRequest((req, res) => {
     cors(req, res, async() => {
         try {
             if (!req.body.token || req.body.token !== internToken) {
-                res.status(403).send('Acesso restrito!')
+                return res.status(403).send('Acesso restrito!')
             }
             if (!req.body.station) {
-                res.status(500).send('Estação inválida!')
+                return res.status(500).send('Estação inválida!')
             }
             if (!req.body.level || typeof(req.body.level) !== "number" || (req.body.level > 3 || req.body.level < 1)) {
-                res.status(500).send('Nível inválido!')
+                return res.status(500).send('Nível inválido!')
+            }
+            const dateEn = await convertDate(new Date().getTime(), 'time', 'en', '-')
+            const start = new Date(`${dateEn} 00:01:00`).getTime()
+            const end = new Date(`${dateEn} 23:59:00`).getTime()
+
+            const saved = await db.collection('stations').doc(req.body.station.id).collection('levels')
+                .where('level', '==', req.body.level)
+                .where('date', ">=", start).where('date', '<=', end).limit(1).get()
+
+            if (saved.docs.length) {
+                return res.status(200).send('Dado já existe no banco de dados!')
             }
 
             const level = {
@@ -28,7 +39,7 @@ exports.saveLevelStation = functions.https.onRequest((req, res) => {
                 dateFormated: await convertDate(new Date().getTime(), 'time', 'pt', '-')
             }
 
-            await db.collection('levels').doc(level.station.id).set(level)
+            await db.collection('stations').doc(level.station.id).collection('levels').add(level)
 
             res.status(200).send('Nível atualizado com sucesso!')
         } catch (e) {

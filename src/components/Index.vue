@@ -9,7 +9,7 @@
         <h6>{{ station.address }}</h6>
       </div>
       <div class="stations">
-        <select v-model="station" name="cars" id="cars">
+        <select @change="changeStation()" v-model="station" name="cars" id="cars">
           <option selected>Selecione a estação</option>
           <option v-for="(sta, index) in stations" :key="sta + index" :value="sta">
             {{ sta.name }}
@@ -20,7 +20,7 @@
     <div class="resultContainer">
       <div class="result">
         <div class="date">
-          <span>{{lastDate}}</span>
+          <span>{{ lastDate }}</span>
         </div>
         <div :class="`${level == 3 ? 'danger' : 'level-inactive'}`">
           <span class="material-icons" :style="`${level == 3 ? 'color:red;' : ''}`"
@@ -52,52 +52,114 @@
         </div>
       </div>
     </div>
+    <div class="graphContainer">
+      <div class="dataFilter">
+        <input type="date" v-model="filter.dateStart" /> até
+        <input type="date" v-model="filter.dateEnd" />
+        <button id="getHistoryButton" type="button" @click="getHistory()">Buscar</button>
+      </div>
+      <div class="graph">
+        <GChart type="ColumnChart" :data="chartData" :options="chartOptions" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { firebase } from "../../firebase";
+import { firebase } from "../../firebaseCredentiais";
+import { convertDate } from "../util/date";
+import { GChart } from "vue-google-charts";
 export default {
   name: "Index",
+  components: {
+    GChart,
+  },
   data() {
     return {
-      stations: [
-        {
-          id: "01",
-          name: "Estação João Dias 01",
-          address: "Avenida João Dias 2025",
-        },
-        {
-          id: "02",
-          name: "Estação Marginal Pinheiros 01",
-          address: "Marginal Pinheiros 3200",
-        },
-      ],
-      station: {
-        id: "01",
-        name: "Estação João Dias 01",
-        address: "Avenida João Dias 2025",
-      },
+      filter: {},
+      stations: [],
+      station: {},
       level: 0,
-      lastDate:''
+      lastDate: "",
+      chartData: [
+        ["Nível", "01", "02", "03"],
+        ["15-03-2021", 1, 0, 3],
+        ["16-03-2021", 0, 3, 2],
+        ["20-03-2021", 2, 1, 0],
+        ["21-03-2021", 1, 2, 3],
+      ],
+      chartOptions: {
+        chart: {
+          title: "Níveis da estação",
+          subtitle: "Níveis medidos no período",
+        },
+        colors: ["#099cf1", "#ffd900", "#ff0000"],
+      },
     };
   },
   computed: {},
   methods: {
-    getLeves() {
-      var query = firebase.firestore().collection("levels").limit(5);
+    changeStation() {
+      this.level = 0;
+      this.getLevels();
+    },
+    async getStations() {
+      var res = await firebase.firestore().collection("stations").get();
+      var st = [];
+      res.forEach((doc) => {
+        st.push(doc.data());
+      });
+      this.stations = st;
+      this.station = st[0];
+      this.getLevels();
+    },
+    getLevels() {
+      var query = firebase
+        .firestore()
+        .collection("stations")
+        .doc(this.station.id)
+        .collection("levels")
+        .orderBy("date", "desc")
+        .limit(1);
       query.onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          var level = change.doc.data();          
+          var level = change.doc.data();
           this.level = level.level;
           this.lastDate = level.dateFormated;
         });
       });
     },
+    async getHistory() {
+      const dateEn = await convertDate(new Date().getTime(), "time", "en", "-");
+      const start = new Date(`${dateEn} 00:01:00`).getTime();
+      const end = new Date(`${dateEn} 23:59:00`).getTime();
+      const res = await firebase
+        .firestore()
+        .collection("stations")
+        .doc(this.station.id)
+        .collection("levels")
+        .where("date", ">=", start)
+        .where("date", "<=", end)
+        .get();
+      const result = [];
+      result[0] = ["Nível", "01", "02", "03"];
+      res.forEach((doc) => {
+        var level = [doc.data().dateFormated];
+        res.docs.map((item) => {
+          if (item.data().dateFormated == level[0]) {
+            level.push(item.data().level);
+          }
+        });
+        console.log("level", level);
+        result.push(level);
+      });
+      console.log("result", result);
+    },
   },
-  mounted() {
-    this.getLeves();
+  beforeMount() {
+    this.getStations();
   },
+  mounted() {},
 };
 </script>
 
