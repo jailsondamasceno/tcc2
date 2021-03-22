@@ -141,19 +141,58 @@ export default {
         .where("date", ">=", start)
         .where("date", "<=", end)
         .get();
+        
+        res.forEach(r=>{
+          console.log('JARVIS', r.data())
+        })
+
+
       const result = [];
       result[0] = ["Nível", "01", "02", "03"];
-      res.forEach((doc) => {
-        var level = [doc.data().dateFormated];
-        res.docs.map((item) => {
-          if (item.data().dateFormated == level[0]) {
-            level.push(item.data().level);
-          }
-        });
-        console.log("level", level);
-        result.push(level);
+      var response = [
+        { dateFomated: "21-03-2021", level: "1" },
+        { dateFomated: "21-03-2021", level: "2" },
+        { dateFomated: "21-03-2021", level: "3" },
+        { dateFomated: "20-03-2021", level: "1" },
+        { dateFomated: "20-03-2021", level: "3" },
+      ];
+
+      var level = {};
+      response.forEach((doc) => {
+        level[doc.dateFomated] = { date: doc.dateFomated };
+        level[doc.dateFomated].levels = [];
       });
-      console.log("result", result);
+
+      response.map((l) => {
+        level[l.dateFomated].levels.push(l.level);
+      });
+
+      var level2 = Object.values(level);
+
+      var level3 = level2.map((lv) => {
+        var item = lv.levels;
+
+        if (!item.includes("3")) {
+          item.splice(2, 0, "0");
+        }
+        if (!item.includes("2")) {
+          item.splice(1, 0, "0");
+        }
+        if (!item.includes("1")) {
+          item.splice(0, 0, "0");
+        }
+
+        item.splice(0, 0, lv.date);
+        return item;
+      });
+      console.log("level3", level3);
+
+      level3.forEach((e) => {
+        result.push(e);
+      });
+      console.log("=====================");
+
+      console.log(result);
     },
   },
   beforeMount() {
