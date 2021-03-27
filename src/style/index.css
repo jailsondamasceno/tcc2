@@ -1,3 +1,8 @@
+.shadow {
+    box-shadow: 0 0.5rem 1rem;
+    color: rgba(0, 0, 0, 0.15);
+}
+
 .title {
     display: flex;
     justify-content: center;
@@ -135,7 +140,9 @@
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    margin-top: 30px;
+    margin-top: 50px;
+    padding: 25px;
+    overflow: auto;
 }
 
 .graph {

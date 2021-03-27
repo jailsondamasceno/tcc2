@@ -52,7 +52,10 @@
         </div>
       </div>
     </div>
-    <div class="graphContainer">
+    <div class="graphContainer shadow">
+       <div class="title">
+      <span>Histórico desta estação.</span>
+    </div>
       <div class="dataFilter">
         <input type="date" v-model="filter.dateStart" /> até
         <input type="date" v-model="filter.dateEnd" />
@@ -67,7 +70,6 @@
 
 <script>
 import { firebase } from "../../firebaseCredentiais";
-import { convertDate } from "../util/date";
 import { GChart } from "vue-google-charts";
 export default {
   name: "Index",
@@ -83,10 +85,10 @@ export default {
       lastDate: "",
       chartData: [
         ["Nível", "01", "02", "03"],
-        ["15-03-2021", 1, 0, 3],
-        ["16-03-2021", 0, 3, 2],
-        ["20-03-2021", 2, 1, 0],
-        ["21-03-2021", 1, 2, 3],
+        ["", 0, 0, 0],
+        ["", 0, 0, 0],
+        ["", 0, 0, 0],
+        ["", 0, 0, 0],
       ],
       chartOptions: {
         chart: {
@@ -130,9 +132,9 @@ export default {
       });
     },
     async getHistory() {
-      const dateEn = await convertDate(new Date().getTime(), "time", "en", "-");
-      const start = new Date(`${dateEn} 00:01:00`).getTime();
-      const end = new Date(`${dateEn} 23:59:00`).getTime();
+
+      const start = new Date(`${this.filter.dateStart} 00:01:00`).getTime();
+      const end = new Date(`${this.filter.dateEnd} 23:59:00`).getTime();
       const res = await firebase
         .firestore()
         .collection("stations")
@@ -142,29 +144,23 @@ export default {
         .where("date", "<=", end)
         .get();
         
-        res.forEach(r=>{
-          console.log('JARVIS', r.data())
-        })
-
 
       const result = [];
       result[0] = ["Nível", "01", "02", "03"];
-      var response = [
-        { dateFomated: "21-03-2021", level: "1" },
-        { dateFomated: "21-03-2021", level: "2" },
-        { dateFomated: "21-03-2021", level: "3" },
-        { dateFomated: "20-03-2021", level: "1" },
-        { dateFomated: "20-03-2021", level: "3" },
-      ];
+      const response = []
+
+      res.forEach(doc=>{
+        response.push({...doc.data()})
+      })
 
       var level = {};
       response.forEach((doc) => {
-        level[doc.dateFomated] = { date: doc.dateFomated };
-        level[doc.dateFomated].levels = [];
+        level[doc.dateFormated] = { date: doc.dateFormated };
+        level[doc.dateFormated].levels = [];
       });
 
       response.map((l) => {
-        level[l.dateFomated].levels.push(l.level);
+        level[l.dateFormated].levels.push(l.level);
       });
 
       var level2 = Object.values(level);
@@ -172,27 +168,26 @@ export default {
       var level3 = level2.map((lv) => {
         var item = lv.levels;
 
-        if (!item.includes("3")) {
-          item.splice(2, 0, "0");
+        if (!item.includes(3)) {
+          item.splice(2, 0, 0);
         }
-        if (!item.includes("2")) {
-          item.splice(1, 0, "0");
+        if (!item.includes(2)) {
+          item.splice(1, 0, 0);
         }
-        if (!item.includes("1")) {
-          item.splice(0, 0, "0");
+        if (!item.includes(1)) {
+          item.splice(0, 0, 0);
         }
 
         item.splice(0, 0, lv.date);
         return item;
       });
-      console.log("level3", level3);
 
       level3.forEach((e) => {
         result.push(e);
       });
-      console.log("=====================");
-
-      console.log(result);
+     
+        this.chartData = result
+      
     },
   },
   beforeMount() {
