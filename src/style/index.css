@@ -131,7 +131,7 @@
     background-color: aqua;
     cursor: pointer;
     border: none;
-    margin: 5px;
+    margin: 10px;
     border-radius: 5px;
 }
 
@@ -143,6 +143,12 @@
     margin-top: 50px;
     padding: 25px;
     overflow: auto;
+}
+
+.dataFilter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .graph {

@@ -53,14 +53,14 @@
       </div>
     </div>
     <div class="graphContainer shadow">
-       <div class="title">
-      <span>Histórico desta estação.</span>
-    </div>
+      <div class="title">
+        <span>Histórico desta estação.</span>
+      </div>
       <div class="dataFilter">
         <input type="date" v-model="filter.dateStart" /> até
         <input type="date" v-model="filter.dateEnd" />
-        <button id="getHistoryButton" type="button" @click="getHistory()">Buscar</button>
       </div>
+      <button id="getHistoryButton" type="button" @click="getHistory()">Buscar</button>
       <div class="graph">
         <GChart type="ColumnChart" :data="chartData" :options="chartOptions" />
       </div>
@@ -132,7 +132,6 @@ export default {
       });
     },
     async getHistory() {
-
       const start = new Date(`${this.filter.dateStart} 00:01:00`).getTime();
       const end = new Date(`${this.filter.dateEnd} 23:59:00`).getTime();
       const res = await firebase
@@ -143,15 +142,14 @@ export default {
         .where("date", ">=", start)
         .where("date", "<=", end)
         .get();
-        
 
       const result = [];
       result[0] = ["Nível", "01", "02", "03"];
-      const response = []
+      const response = [];
 
-      res.forEach(doc=>{
-        response.push({...doc.data()})
-      })
+      res.forEach((doc) => {
+        response.push({ ...doc.data() });
+      });
 
       var level = {};
       response.forEach((doc) => {
@@ -185,9 +183,8 @@ export default {
       level3.forEach((e) => {
         result.push(e);
       });
-     
-        this.chartData = result
-      
+
+      this.chartData = result;
     },
   },
   beforeMount() {
